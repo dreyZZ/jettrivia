@@ -1,6 +1,6 @@
 package com.dreyzz.jettrivia.di
 
-import com.dreyzz.jettrivia.network.QuestionApi
+import com.dreyzz.jettrivia.data.question.network.QuestionApi
 import com.dreyzz.jettrivia.util.Constants
 import dagger.Module
 import dagger.Provides

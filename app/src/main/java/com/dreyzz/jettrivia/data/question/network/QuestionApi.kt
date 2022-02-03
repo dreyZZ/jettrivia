@@ -1,4 +1,4 @@
-package com.dreyzz.jettrivia.network
+package com.dreyzz.jettrivia.data.question.network
 
 import com.dreyzz.jettrivia.model.Questions
 import retrofit2.http.GET
