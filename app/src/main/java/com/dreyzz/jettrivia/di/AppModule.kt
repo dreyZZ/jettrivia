@@ -1,6 +1,7 @@
 package com.dreyzz.jettrivia.di
 
 import com.dreyzz.jettrivia.data.question.network.QuestionApi
+import com.dreyzz.jettrivia.data.question.repository.QuestionRepository
 import com.dreyzz.jettrivia.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -13,6 +14,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Singleton
+    @Provides
+    fun provideQuestionRepository(api: QuestionApi) = QuestionRepository(api)
 
     @Singleton
     @Provides
