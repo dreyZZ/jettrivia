@@ -6,10 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.ButtonDefaults.buttonColors
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,8 +19,10 @@ import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dreyzz.jettrivia.model.QuestionItem
@@ -31,13 +31,13 @@ import com.dreyzz.jettrivia.util.AppColors
 
 @Composable
 fun QuestionOrProgressView(viewModel: QuestionsViewModel) {
-    val questions = viewModel.data.value.data?.toMutableList()
+    val questions = viewModel.dataState.value.data?.toMutableList()
 
     val questionIndexState = remember {
         mutableStateOf(0)
     }
 
-    if (viewModel.data.value.loading == true) {
+    if (viewModel.dataState.value.loading == true) {
         CircularProgressIndicator()
     } else {
         questions?.let {
@@ -93,7 +93,13 @@ fun QuestionView(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            QuestionTracker(counter = questionIndexState.value)
+            if (questionIndexState.value >= 3)
+                ProgressBar(score = questionIndexState.value)
+
+            QuestionTracker(
+                counter = questionIndexState.value,
+                outOf = viewModel.getTotalQuestionCount()
+            )
             DottedLine(pathEffect = pathEffect)
             Column {
                 Text(
@@ -199,6 +205,66 @@ fun DottedLine(pathEffect: PathEffect) {
             end = Offset(size.width, 0f),
             pathEffect = pathEffect
         )
+    }
+}
+
+@Preview
+@Composable
+fun ProgressBar(score: Int = 12) {
+    val gradient = Brush.linearGradient(
+        listOf(
+            Color(0xFFF95075),
+            Color(0xFFBE6BE5)
+        )
+    )
+
+    val progressFactor by remember(score) {
+        mutableStateOf(score * 0.005f)
+    }
+
+    Row(
+        modifier = Modifier
+            .padding(3.dp)
+            .fillMaxWidth()
+            .height(45.dp)
+            .border(
+                width = 4.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        AppColors.mLightPurple,
+                        AppColors.mLightPurple
+                    )
+                ),
+                shape = RoundedCornerShape(34.dp)
+            )
+            .clip(RoundedCornerShape(percent = 50))
+            .background(Color.Transparent),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth(progressFactor)
+                .background(brush = gradient),
+            contentPadding = PaddingValues(1.dp),
+            enabled = false,
+            elevation = null,
+            colors = buttonColors(
+                backgroundColor = Color.Transparent,
+                disabledBackgroundColor = Color.Transparent
+            )
+        ) {
+            Text(
+                text = "${score * 10}",
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(23.dp))
+                    .fillMaxHeight(0.87f)
+                    .fillMaxWidth()
+                    .padding(6.dp),
+                color = AppColors.mOffWhite,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

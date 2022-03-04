@@ -15,7 +15,7 @@ import javax.inject.Inject
 class QuestionsViewModel @Inject constructor(
     private val repository: QuestionRepository
 ) : ViewModel() {
-    val data: MutableState<
+    val dataState: MutableState<
             DataOrException<
                     ArrayList<QuestionItem>, Boolean, Exception
                     >
@@ -28,9 +28,13 @@ class QuestionsViewModel @Inject constructor(
     private fun getAllQuestions() {
         viewModelScope.launch {
 //            data.value.loading = true
-            data.value = repository.getAllQuestions()
+            dataState.value = repository.getAllQuestions()
 //            if (data.value.data.toString().isNotEmpty())
 //                data.value.loading = false
         }
+    }
+
+    fun getTotalQuestionCount(): Int {
+        return dataState.value.data?.size ?: 0
     }
 }
